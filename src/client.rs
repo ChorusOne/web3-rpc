@@ -7,15 +7,21 @@ use std::collections::HashMap;
 #[derive(Clone)]
 pub struct Client {
     pub url: String,
-    pub client: reqwest::Client,
+    pub client: reqwest_middleware::ClientWithMiddleware,
 }
 
 impl Client {
+    pub fn default_client() -> reqwest_middleware::ClientWithMiddleware {
+        let wrapped_client = reqwest::Client::new();
+        reqwest_middleware::ClientBuilder::new(wrapped_client).build()
+    }
+
     pub fn new(url: String) -> Self {
-        Client {
-            url: url,
-            client: reqwest::Client::new(),
-        }
+        Self::new_with_client(url, Self::default_client())
+    }
+
+    pub fn new_with_client(url: String, client: reqwest_middleware::ClientWithMiddleware) -> Self {
+        Client { url, client }
     }
 
     pub async fn post(&self, payload: Value) -> anyhow::Result<String> {

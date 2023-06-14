@@ -14,6 +14,12 @@ impl Web3 {
         }
     }
 
+    pub fn new_with_client(url: String, client: reqwest_middleware::ClientWithMiddleware) -> Self {
+        Web3 {
+            client: Client::new_with_client(url, client),
+        }
+    }
+
     // web3
     pub async fn web3_client_version(&self) -> anyhow::Result<JsonRpcResult<String>> {
         let payload =
