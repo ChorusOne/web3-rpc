@@ -109,7 +109,7 @@ pub struct Receipt {
     pub logs: Vec<ReceiptLog>,
     pub logs_bloom: String,
     pub status: String,
-    pub to: String,
+    pub to: Option<String>,
     pub transaction_hash: String,
     pub transaction_index: String,
     #[serde(rename = "type")]
