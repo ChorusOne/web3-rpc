@@ -26,7 +26,12 @@ impl Web3 {
         T: Deserialize<'de>,
     {
         let jd = &mut serde_json::Deserializer::from_str(entity_str);
-        let entity: T = serde_path_to_error::deserialize(jd)?;
+        let entity: T = serde_path_to_error::deserialize(jd).map_err(
+            |e| {
+                tracing::error!("Failed to parse Web3 entity: {e:?}");
+                e
+            }
+        )?;
         Ok(entity)
     }
 
