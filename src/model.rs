@@ -81,7 +81,7 @@ pub struct Transaction {
     pub nonce: String,
     pub r: String,
     pub s: String,
-    pub to: String,
+    pub to: Option<String>,
     pub transaction_index: String,
     #[serde(rename = "type")]
     pub transaction_type: String,
