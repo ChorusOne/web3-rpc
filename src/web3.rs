@@ -1,5 +1,6 @@
 use crate::client::Client;
 use crate::model::{Block, JsonRpcResult, Receipt, Tag, Transaction};
+use serde::Deserialize;
 use serde_json::{json, Value};
 
 #[derive(Clone)]
@@ -20,12 +21,21 @@ impl Web3 {
         }
     }
 
+    fn parse_json<'de, T>(entity_str: &'de str) -> anyhow::Result<T>
+    where
+        T: Deserialize<'de>,
+    {
+        let jd = &mut serde_json::Deserializer::from_str(entity_str);
+        let entity: T = serde_path_to_error::deserialize(jd)?;
+        Ok(entity)
+    }
+
     // web3
     pub async fn web3_client_version(&self) -> anyhow::Result<JsonRpcResult<String>> {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "net_version", "params": [], "id": "101" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -34,7 +44,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "web3_sha3", "params": [sha3], "id": "102" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -44,7 +54,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "net_version", "params": [], "id": "401" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -53,7 +63,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "net_listening", "params": [], "id": "402" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<bool> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<bool> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -62,7 +72,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": "303" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<i64> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<i64> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -72,7 +82,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_protocolVersion", "params": [], "id": "304" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -81,7 +91,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_syncing", "params": [], "id": "305" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<bool> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<bool> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -90,7 +100,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_coinbase", "params": [], "id": "306" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -99,7 +109,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_mining", "params": [], "id": "307" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<bool> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<bool> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -108,7 +118,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_hashrate", "params": [], "id": "308" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -117,7 +127,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_gasPrice", "params": [], "id": "309" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -126,7 +136,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_accounts", "params": [], "id": "310" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Vec<String>> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Vec<String>> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -142,7 +152,7 @@ impl Web3 {
         }
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getBalance", "params": [address, t], "id": "311" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -159,7 +169,7 @@ impl Web3 {
         }
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getStorageAt", "params": [data, quantity, t], "id": "312" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -175,7 +185,7 @@ impl Web3 {
         }
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getTransactionCount", "params": [address, t], "id": "313" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -186,7 +196,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<String>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getBlockTransactionCountByHash", "params": [hash], "id": "314" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -197,7 +207,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<String>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getBlockTransactionCountByNumber", "params": [number], "id": "315" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -208,7 +218,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<String>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getUncleCountByBlockHash", "params": [hash], "id": "316" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -219,7 +229,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<String>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getUncleCountByBlockNumber", "params": [number], "id": "317" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -235,7 +245,7 @@ impl Web3 {
         }
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getCode", "params": [address, t], "id": "318" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -247,7 +257,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<String>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_sign", "params": [address, data], "id": "319" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -270,7 +280,7 @@ impl Web3 {
             "data": data
         }], "id": "320" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -281,7 +291,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<String>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_sendRawTransaction", "params": [hash], "id": "321" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -290,7 +300,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_call", "params": [data], "id": "322" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -299,7 +309,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_estimateGas", "params": [data], "id": "323" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -311,7 +321,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<Block>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getBlockByHash", "params": [hash, obj], "id": "324" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Block> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Block> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -323,7 +333,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<Block>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": [number, obj], "id": "325" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Block> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Block> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -334,7 +344,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<Transaction>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getTransactionByHash", "params": [hash], "id": "326" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Transaction> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Transaction> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -343,7 +353,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": "327" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<String> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<String> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -354,7 +364,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<Receipt>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getTransactionReceipt", "params": [hash], "id": "328" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Receipt> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Receipt> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -366,7 +376,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<Transaction>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getTransactionByBlockHashAndIndex", "params": [hash, index], "id": "329" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Transaction> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Transaction> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -378,7 +388,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<Transaction>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getTransactionByBlockNumberAndIndex", "params": [number, index], "id": "330" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Transaction> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Transaction> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -390,7 +400,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<Block>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getUncleByBlockHashAndIndex", "params": [hash, index], "id": "331" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Block> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Block> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -402,7 +412,7 @@ impl Web3 {
     ) -> anyhow::Result<JsonRpcResult<Block>> {
         let payload = json!({ "jsonrpc": "2.0", "method": "eth_getUncleByBlockNumberAndIndex", "params": [hash, index], "id": "332" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Block> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Block> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }
@@ -411,7 +421,7 @@ impl Web3 {
         let payload =
             json!({ "jsonrpc": "2.0", "method": "eth_getCompilers", "params": [], "id": "333" });
         let result = self.client.post(payload).await?;
-        let r: JsonRpcResult<Vec<String>> = serde_json::from_str(result.as_str())?;
+        let r: JsonRpcResult<Vec<String>> = Self::parse_json(result.as_str())?;
 
         Ok(r)
     }

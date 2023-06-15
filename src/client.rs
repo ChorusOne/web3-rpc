@@ -25,11 +25,7 @@ impl Client {
     }
 
     pub async fn post(&self, payload: Value) -> anyhow::Result<String> {
-        let response = self.client
-            .post(&self.url)
-            .json(&payload)
-            .send()
-            .await?;
+        let response = self.client.post(&self.url).json(&payload).send().await?;
 
         self.handler(response).await
     }
