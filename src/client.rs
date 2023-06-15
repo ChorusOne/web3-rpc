@@ -25,7 +25,7 @@ impl Client {
     }
 
     pub async fn post(&self, payload: Value) -> anyhow::Result<String> {
-        let response = reqwest::Client::new()
+        let response = self.client
             .post(&self.url)
             .json(&payload)
             .send()
