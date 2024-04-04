@@ -79,12 +79,15 @@ pub struct Transaction {
     pub max_fee_per_gas: Option<String>,
     pub max_priority_fee_per_gas: Option<String>,
     pub nonce: String,
+    #[serde(default)]
     pub r: String,
+    #[serde(default)]
     pub s: String,
     pub to: Option<String>,
     pub transaction_index: String,
     #[serde(rename = "type")]
     pub transaction_type: String,
+    #[serde(default)]
     pub v: String,
     pub value: String,
 }
