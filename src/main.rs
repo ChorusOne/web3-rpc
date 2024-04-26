@@ -1,9 +1,11 @@
+use error_stack::{Report, ResultExt};
 use serde_json::json;
+use web3_rpc::client::Error;
 use web3_rpc::model::{JsonRpcResult, Tag};
 use web3_rpc::web3::Web3;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<(), Report<Error>> {
     let rpc = Web3::new("http://127.0.0.1:8545".to_string());
     let r = rpc.web3_client_version().await?;
     println!("{:?}", r);
@@ -192,13 +194,13 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn your_self_rest() -> anyhow::Result<JsonRpcResult<Vec<String>>> {
+async fn your_self_rest() -> Result<JsonRpcResult<Vec<String>>, Report<Error>> {
     // example
     // eth_accounts
     let rpc = Web3::new("http://127.0.0.1:8545".to_string());
     let payload = json!({ "jsonrpc": "2.0", "method": "eth_accounts", "params": [], "id": "310" });
     let result = rpc.client.post(payload).await?;
-    let r: JsonRpcResult<Vec<String>> = serde_json::from_str(result.as_str())?;
+    let r: JsonRpcResult<Vec<String>> = serde_json::from_str(result.as_str()).change_context(Error::FailedToDeserialize)?;
 
     Ok(r)
 }
